@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sagui Cotações · PC Gamer AM5</title>
+<style>
+  :root {
+    --bg: #f5f6f8; --card: #ffffff; --text: #1d2330; --muted: #6b7385; --line: #e6e8ee;
+    --green: #15803d; --green-bg: #dcfce7; --green-line: #86efac;
+    --blue: #1d4ed8; --blue-bg: #e0eaff; --red: #b91c1c; --accent: #c2620e;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #12151b; --card: #1b1f27; --text: #e8eaf0; --muted: #9aa2b4; --line: #2b313d;
+      --green: #4ade80; --green-bg: #12301f; --green-line: #1f6b3a;
+      --blue: #93b4ff; --blue-bg: #1c2742; --red: #f87171; --accent: #f59e4b;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 24px 16px 48px; }
+  .brand { color: var(--accent); font-weight: 700; font-size: 13px; letter-spacing: .04em; text-transform: uppercase; }
+  header.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+  h1 { margin: 2px 0 4px; font-size: 24px; }
+  .sub { color: var(--muted); font-size: 13px; }
+  .pill { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 10px; border-radius: 999px; background: var(--green-bg); color: var(--green); }
+  .pill.off { background: var(--line); color: var(--muted); }
+  .total { background: var(--green-bg); border: 1px solid var(--green-line); color: var(--green);
+           border-radius: 12px; padding: 10px 16px; text-align: right; }
+  .total b { display: block; font-size: 22px; }
+  .total small { font-size: 12px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; margin-bottom: 16px; overflow: hidden; }
+  .card > h2 { margin: 0; padding: 12px 16px; font-size: 16px; border-bottom: 1px solid var(--line); }
+  table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  th, td { padding: 10px 16px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  tr:last-child td { border-bottom: 0; }
+  th { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); font-weight: 600; }
+  td.price { white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .up { color: var(--red); font-weight: 600; } .down { color: var(--green); font-weight: 600; } .eq { color: var(--muted); }
+  /* coletas */
+  details.coleta { background: var(--card); border: 1px solid var(--line); border-radius: 14px; margin-bottom: 14px; overflow: hidden; }
+  details.coleta > summary { cursor: pointer; list-style: none; padding: 14px 16px; display: flex; flex-wrap: wrap;
+                             justify-content: space-between; gap: 8px; align-items: center; font-weight: 600; }
+  details.coleta > summary::-webkit-details-marker { display: none; }
+  details.coleta > summary::before { content: "▸"; margin-right: 8px; color: var(--muted); }
+  details.coleta[open] > summary::before { content: "▾"; }
+  details.coleta[open] > summary { border-bottom: 1px solid var(--line); }
+  .sum-total { color: var(--green); font-variant-numeric: tabular-nums; }
+  .body { padding: 14px; }
+  section.prod { border: 1px solid var(--line); border-radius: 12px; margin-bottom: 12px; overflow: hidden; }
+  section.prod h3 { margin: 0; padding: 10px 14px; font-size: 15px; border-bottom: 1px solid var(--line);
+                    display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  section.prod h3 .num { color: var(--accent); font-weight: 700; }
+  section.prod h3 .spec { color: var(--muted); font-weight: 400; font-size: 13px; }
+  section.prod th:nth-child(1) { width: 46%; } section.prod th:nth-child(2) { width: 17%; }
+  section.prod th:nth-child(3) { width: 24%; } section.prod th:nth-child(4) { width: 13%; }
+  .store { font-weight: 600; }
+  .prod-name { color: var(--muted); font-size: 13px; }
+  tr.best td { background: var(--green-bg); }
+  tr.best td.pix { color: var(--green); font-weight: 700; }
+  tr.best td:first-child { box-shadow: inset 4px 0 0 var(--green); }
+  .tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 999px; margin-left: 6px; vertical-align: 1px; }
+  .tag.g { background: var(--green); color: var(--card); }
+  .tag.b { background: var(--blue-bg); color: var(--blue); }
+  .inst { color: var(--muted); font-size: 12px; display: block; }
+  a.btn { display: inline-block; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--line);
+          color: var(--text); text-decoration: none; font-size: 13px; white-space: nowrap; }
+  a.btn:hover { border-color: var(--accent); color: var(--accent); }
+  .note { padding: 10px 14px; font-size: 13px; color: var(--muted); border-top: 1px dashed var(--line); }
+  .obs { font-size: 13px; color: var(--muted); padding: 4px 4px 0; }
+  .obs ul { margin: 6px 0; padding-left: 18px; }
+  @media (max-width: 640px) {
+    section.prod thead { display: none; }
+    section.prod tr { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+    section.prod tr:last-child { border-bottom: 0; }
+    section.prod td { padding: 0; border: 0; }
+    section.prod td.store-cell { grid-column: 1 / 3; }
+    section.prod tr.best { background: var(--green-bg); box-shadow: inset 4px 0 0 var(--green); }
+    section.prod tr.best td { background: transparent; box-shadow: none !important; }
+    .resumo th:nth-child(4), .resumo td:nth-child(4) { display: none; }
+  }
+</style>
+<!-- Dados da Sagui (não aparecem na página). Config + histórico: a coleta mais recente primeiro. -->
+<script type="application/json" id="sagui-config">
+{"nome": "PC Gamer AM5", "slug": "pc-gamer-am5", "status": "ativa", "criada_em": "2026-11-11", "concluida_em": null,
+ "horarios": ["10:00", "15:00", "20:00"], "tarefa_agendada": "cotacao-pecas-pc", "whatsapp": true,
+ "lojas": ["KaBuM", "Pichau", "Terabyte", "Mercado Livre", "Amazon"], "max_por_item": 3,
+ "itens": [
+  {"id": "cpu", "emoji": "🖥️", "nome": "Processador AMD Ryzen 5 9600X", "curto": "CPU Ryzen 5 9600X",
+   "caracteristicas": "AM5 · sem cooler", "busca": ["ryzen 5 9600x"], "obrigatorio": ["Ryzen 5", "9600X"],
+   "excluir": ["kit", "pc gamer", "pc home"], "observacao": ""},
+  {"id": "gpu", "emoji": "🎮", "nome": "Placa de Vídeo Asus AMD Radeon RX 9060 XT 16GB", "curto": "GPU RX 9060 XT 16GB",
+   "caracteristicas": "Asus (Dual, Prime ou TUF) · 16GB GDDR6", "busca": ["asus rx 9060 xt 16gb"],
+   "obrigatorio": ["Asus", "9060 XT", "16GB"], "excluir": ["8GB", "kit", "pc gamer"], "observacao": "Tem que ser Asus e 16GB."},
+  {"id": "mb", "emoji": "🧩", "nome": "Placa-Mãe Gigabyte B650M D3HP", "curto": "Placa-mãe B650M D3HP",
+   "caracteristicas": "AM5 · DDR5 · versão AX (Wi-Fi) também vale", "busca": ["b650m d3hp"],
+   "obrigatorio": ["B650M", "D3HP"], "excluir": ["kit", "B840M", "B760M"], "observacao": ""},
+  {"id": "psu", "emoji": "⚡", "nome": "Fonte Corsair CX650 80 Plus Bronze", "curto": "Fonte CX650",
+   "caracteristicas": "650W · 80 Plus Bronze (CX750 aceita)", "busca": ["fonte corsair cx650", "fonte corsair cx750"],
+   "obrigatorio": ["Corsair", "CX650|CX750", "Bronze"], "excluir": ["kit"],
+   "observacao": "Registrar a melhor CX750 Bronze como nota na seção da fonte."},
+  {"id": "ram", "emoji": "🧠", "nome": "Memória RAM DDR5 16GB desktop", "curto": "RAM DDR5 16GB",
+   "caracteristicas": "DDR5 · 16GB (1x16GB) · UDIMM desktop", "busca": ["memoria ddr5 16gb", "memoria ddr5 16gb 5600"],
+   "obrigatorio": ["DDR5", "16GB"], "excluir": ["notebook", "sodimm", "so-dimm", "2x8", "32GB", "kit"], "observacao": ""}
+ ],
+ "notas": ["O Ryzen 5 9600X vem sem cooler.", "Shopee não consultada (exige login e muitos vendedores internacionais)."]}
+</script>
+<script type="application/json" id="sagui-historico">
+[{"data": "2026-11-11", "hora": "10:00", "total_pix": 7733.95,
+  "itens": {"cpu": {"pix": 1049.99, "parcelado": 1235.28, "loja": "Amazon/Pichau"},
+            "gpu": {"pix": 3999.99, "parcelado": 4705.87, "loja": "Pichau"},
+            "mb":  {"pix": 759.99, "parcelado": 829.00, "loja": "Terabyte"},
+            "psu": {"pix": 323.98, "parcelado": 359.94, "loja": "Amazon"},
+            "ram": {"pix": 1600.00, "parcelado": 1700.80, "loja": "Amazon"}},
+  "extras": {"psu750": {"pix": 389.99, "parcelado": 458.81, "loja": "Pichau"}},
+  "falhas": ["Shopee (não consultada)"]}]
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="brand">🐒 Sagui Cotações</div>
+      <h1>PC Gamer AM5</h1>
+      <div class="sub"><span class="pill">Ativa</span> · Coletas 10h, 15h e 20h · Lojas: geral (KaBuM, Pichau, Terabyte, Mercado Livre, Amazon) · 1 coleta · Atualizado em 11/11/2026 10h</div>
+    </div>
+    <div class="total"><small>Melhor combinação no Pix (agora)</small><b>R$ 7.733,95</b></div>
+  </header>
+
+  <!-- RESUMO:INICIO -->
+  <div class="card resumo">
+    <h2>Resumo — menor Pix por produto</h2>
+    <table>
+      <thead><tr><th style="width:34%">Produto</th><th style="width:28%">Agora</th><th style="width:16%">Variação</th><th style="width:22%">Menor do histórico</th></tr></thead>
+      <tbody>
+        <tr><td>🖥️ Ryzen 5 9600X</td><td class="price">R$ 1.049,99 · Amazon/Pichau</td><td class="eq">1ª coleta</td><td class="price">R$ 1.049,99 · 11/11 10h</td></tr>
+        <tr><td>🎮 Asus RX 9060 XT 16GB</td><td class="price">R$ 3.999,99 · Pichau</td><td class="eq">1ª coleta</td><td class="price">R$ 3.999,99 · 11/11 10h</td></tr>
+        <tr><td>🧩 B650M D3HP</td><td class="price">R$ 759,99 · Terabyte</td><td class="eq">1ª coleta</td><td class="price">R$ 759,99 · 11/11 10h</td></tr>
+        <tr><td>⚡ Corsair CX650</td><td class="price">R$ 323,98 · Amazon</td><td class="eq">1ª coleta</td><td class="price">R$ 323,98 · 11/11 10h</td></tr>
+        <tr><td>🧠 DDR5 16GB</td><td class="price">R$ 1.600,00 · Amazon</td><td class="eq">1ª coleta</td><td class="price">R$ 1.600,00 · 11/11 10h</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <!-- RESUMO:FIM -->
+
+  <!-- COLETAS:INICIO -->
+  <details class="coleta" open>
+    <summary><span>📅 11/11/2026 · 10h</span><span class="sum-total">Total Pix R$ 7.733,95 <span class="eq">(1ª coleta)</span></span></summary>
+    <div class="body">
+
+      <section class="prod">
+        <h3><span class="num">1</span> Processador <span class="spec">AMD Ryzen 5 9600X · AM5 · sem cooler</span></h3>
+        <table>
+          <thead><tr><th>Loja</th><th>Pix</th><th>Parcelado</th><th></th></tr></thead>
+          <tbody>
+            <tr class="best"><td class="store-cell"><span class="store">Amazon</span><span class="tag g">Menor Pix</span><div class="prod-name">Vendido pela Amazon.com.br</div></td>
+              <td class="price pix">R$ 1.049,99</td><td class="price">R$ 1.236,00<span class="inst">10x R$ 123,60</span></td>
+              <td><a class="btn" href="https://www.amazon.com.br/dp/B0D6NN6TM7" target="_blank">Abrir ↗</a></td></tr>
+            <tr class="best"><td class="store-cell"><span class="store">Pichau</span><span class="tag g">Menor Pix</span><span class="tag b">Menor parcelado</span><div class="prod-name">100-100001405WOF</div></td>
+              <td class="price pix">R$ 1.049,99</td><td class="price">R$ 1.235,28<span class="inst">12x R$ 102,94 s/ juros</span></td>
+              <td><a class="btn" href="https://www.pichau.com.br/processador-amd-ryzen-5-9600x-6-core-12-threads-3-9ghz-5-4ghz-turbo-cache-38mb-am5-100-100001405wof" target="_blank">Abrir ↗</a></td></tr>
+            <tr><td class="store-cell"><span class="store">KaBuM</span><div class="prod-name">Vendido pela KaBuM!</div></td>
+              <td class="price pix">R$ 1.199,99</td><td class="price">R$ 1.411,75<span class="inst">10x R$ 141,17 s/ juros</span></td>
+              <td><a class="btn" href="https://www.kabum.com.br/produto/609956" target="_blank">Abrir ↗</a></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="prod">
+        <h3><span class="num">2</span> Placa de Vídeo <span class="spec">Asus Radeon RX 9060 XT · 16GB GDDR6</span></h3>
+        <table>
+          <thead><tr><th>Loja</th><th>Pix</th><th>Parcelado</th><th></th></tr></thead>
+          <tbody>
+            <tr class="best"><td class="store-cell"><span class="store">Pichau</span><span class="tag g">Menor Pix</span><span class="tag b">Menor parcelado</span><div class="prod-name">Asus Dual 16GB</div></td>
+              <td class="price pix">R$ 3.999,99</td><td class="price">R$ 4.705,87<span class="inst">12x R$ 392,16 s/ juros</span></td>
+              <td><a class="btn" href="https://www.pichau.com.br/placa-de-video-asus-radeon-rx-9060-xt-dual-16gb-gddr6-128-bit-dual-rx9060xt-16g" target="_blank">Abrir ↗</a></td></tr>
+            <tr><td class="store-cell"><span class="store">Terabyte</span><div class="prod-name">Asus Dual 16GB</div></td>
+              <td class="price pix">R$ 4.099,99</td><td class="price">R$ 4.823,52<span class="inst">12x R$ 401,96 s/ juros</span></td>
+              <td><a class="btn" href="https://www.terabyteshop.com.br/produto/38270/placa-de-video-asus-amd-radeon-rx-9060-xt-dual-16gb-gddr6-fsr-ray-tracing-90yv0lg2-m0na00" target="_blank">Abrir ↗</a></td></tr>
+            <tr><td class="store-cell"><span class="store">Mercado Livre</span><div class="prod-name">Asus Dual 16GB · catálogo</div></td>
+              <td class="price pix">R$ 4.299,00</td><td class="price">R$ 4.499,00<span class="inst">outros meios · ver anúncio</span></td>
+              <td><a class="btn" href="https://www.mercadolivre.com.br/placa-de-video-asus-radeon-rx-9060-xt-dual-16gb-gddr6-128-bit/p/MLB58680879" target="_blank">Abrir ↗</a></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="prod">
+        <h3><span class="num">3</span> Placa-Mãe <span class="spec">Gigabyte B650M D3HP · AM5 · DDR5</span></h3>
+        <table>
+          <thead><tr><th>Loja</th><th>Pix</th><th>Parcelado</th><th></th></tr></thead>
+          <tbody>
+            <tr class="best"><td class="store-cell"><span class="store">Terabyte</span><span class="tag g">Menor Pix</span></td>
+              <td class="price pix">R$ 759,99</td><td class="price">R$ 894,12<span class="inst">12x R$ 74,51 s/ juros</span></td>
+              <td><a class="btn" href="https://www.terabyteshop.com.br/produto/37868/placa-mae-gigabyte-b650m-d3hp-chipset-b650-amd-am5-matx-ddr5-m" target="_blank">Abrir ↗</a></td></tr>
+            <tr><td class="store-cell"><span class="store">KaBuM</span><div class="prod-name">Vendido pela KaBuM!</div></td>
+              <td class="price pix">R$ 769,99</td><td class="price">R$ 855,54<span class="inst">10x R$ 85,55 s/ juros</span></td>
+              <td><a class="btn" href="https://www.kabum.com.br/produto/534674" target="_blank">Abrir ↗</a></td></tr>
+            <tr><td class="store-cell"><span class="store">Mercado Livre</span><span class="tag b">Menor parcelado</span><div class="prod-name">Vendedor ML</div></td>
+              <td class="price pix">R$ 829,00</td><td class="price">R$ 829,00<span class="inst">10x R$ 82,90 s/ juros</span></td>
+              <td><a class="btn" href="https://www.mercadolivre.com.br/placa-mae-gigabyte-b650m-d3hp-ddr5-socket-am5-b650-m-atx/up/MLBU3217143675" target="_blank">Abrir ↗</a></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="prod">
+        <h3><span class="num">4</span> Fonte <span class="spec">Corsair CX650 · 80 Plus Bronze</span></h3>
+        <table>
+          <thead><tr><th>Loja</th><th>Pix</th><th>Parcelado</th><th></th></tr></thead>
+          <tbody>
+            <tr class="best"><td class="store-cell"><span class="store">Amazon</span><span class="tag g">Menor Pix</span><span class="tag b">Menor parcelado</span><div class="prod-name">Vendido pela KaBuM! via Amazon</div></td>
+              <td class="price pix">R$ 323,98</td><td class="price">R$ 359,94<span class="inst">7x R$ 51,42</span></td>
+              <td><a class="btn" href="https://www.amazon.com.br/dp/B0D1LVW7T6" target="_blank">Abrir ↗</a></td></tr>
+            <tr><td class="store-cell"><span class="store">Pichau</span><div class="prod-name">CP-9020278-BR</div></td>
+              <td class="price pix">R$ 349,99</td><td class="price">R$ 411,75<span class="inst">12x R$ 34,31 s/ juros</span></td>
+              <td><a class="btn" href="https://www.pichau.com.br/fonte-corsair-cx650-650w-80-plus-bronze-preto-cp-9020278-br" target="_blank">Abrir ↗</a></td></tr>
+            <tr><td class="store-cell"><span class="store">KaBuM</span><div class="prod-name">Vendido pela KaBuM!</div></td>
+              <td class="price pix">R$ 359,99</td><td class="price">R$ 399,99<span class="inst">10x R$ 39,99 s/ juros</span></td>
+              <td><a class="btn" href="https://www.kabum.com.br/produto/516056" target="_blank">Abrir ↗</a></td></tr>
+          </tbody>
+        </table>
+        <div class="note">Opção 750W: Corsair CX750 na Pichau — R$ 389,99 Pix / R$ 458,81 em 12x · <a href="https://www.pichau.com.br/fonte-corsair-cx750-750w-80-plus-bronze-preto-cp-9020279-br" target="_blank">abrir ↗</a></div>
+      </section>
+
+      <section class="prod">
+        <h3><span class="num">5</span> Memória RAM <span class="spec">DDR5 · 16GB (1x16GB) desktop</span></h3>
+        <table>
+          <thead><tr><th>Loja</th><th>Pix</th><th>Parcelado</th><th></th></tr></thead>
+          <tbody>
+            <tr class="best"><td class="store-cell"><span class="store">Amazon</span><span class="tag g">Menor Pix</span><div class="prod-name">Crucial 5600MHz · vend. VORTEX DIGITAL BSB, enviado pela Amazon</div></td>
+              <td class="price pix">R$ 1.600,00</td><td class="price">R$ 1.791,96<span class="inst">12x R$ 149,33</span></td>
+              <td><a class="btn" href="https://www.amazon.com.br/dp/B0BLTGMCB7" target="_blank">Abrir ↗</a></td></tr>
+            <tr><td class="store-cell"><span class="store">Amazon</span><span class="tag b">Menor parcelado</span><div class="prod-name">Transcend 5600MHz · só 1 unidade</div></td>
+              <td class="price pix">R$ 1.699,99</td><td class="price">R$ 1.700,80<span class="inst">10x R$ 170,08</span></td>
+              <td><a class="btn" href="https://www.amazon.com.br/dp/B0BY6MLXKC" target="_blank">Abrir ↗</a></td></tr>
+            <tr><td class="store-cell"><span class="store">Mercado Livre</span><div class="prod-name">Kingston ValueRAM 5600 CL46 · catálogo</div></td>
+              <td class="price pix">R$ 1.823,00</td><td class="price">R$ 1.823,00<span class="inst">10x R$ 182,30 s/ juros</span></td>
+              <td><a class="btn" href="https://www.mercadolivre.com.br/memoria-desktop-ram-kingston-valueram-16gb-5600mts-cl46-dimm-ddr5/p/MLB34361422" target="_blank">Abrir ↗</a></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <div class="obs">
+        <b>Observações</b>
+        <ul>
+          <li>Primeira coleta — sem comparação anterior.</li>
+          <li>Excluídos: open box, usados, kits e "Compra Internacional". Shopee não consultada (exige login).</li>
+        </ul>
+      </div>
+    </div>
+  </details>
+  <!-- COLETAS:FIM -->
+</div>
+</body>
+</html>

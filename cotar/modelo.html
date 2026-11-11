@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sagui Cotações · {{NOME}}</title>
+<style>
+  :root {
+    --bg: #f5f6f8; --card: #ffffff; --text: #1d2330; --muted: #6b7385; --line: #e6e8ee;
+    --green: #15803d; --green-bg: #dcfce7; --green-line: #86efac;
+    --blue: #1d4ed8; --blue-bg: #e0eaff; --red: #b91c1c; --accent: #c2620e;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #12151b; --card: #1b1f27; --text: #e8eaf0; --muted: #9aa2b4; --line: #2b313d;
+      --green: #4ade80; --green-bg: #12301f; --green-line: #1f6b3a;
+      --blue: #93b4ff; --blue-bg: #1c2742; --red: #f87171; --accent: #f59e4b;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 24px 16px 48px; }
+  .brand { color: var(--accent); font-weight: 700; font-size: 13px; letter-spacing: .04em; text-transform: uppercase; }
+  header.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+  h1 { margin: 2px 0 4px; font-size: 24px; }
+  .sub { color: var(--muted); font-size: 13px; }
+  .pill { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 10px; border-radius: 999px; background: var(--green-bg); color: var(--green); }
+  .pill.off { background: var(--line); color: var(--muted); }
+  .total { background: var(--green-bg); border: 1px solid var(--green-line); color: var(--green);
+           border-radius: 12px; padding: 10px 16px; text-align: right; }
+  .total b { display: block; font-size: 22px; }
+  .total small { font-size: 12px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; margin-bottom: 16px; overflow: hidden; }
+  .card > h2 { margin: 0; padding: 12px 16px; font-size: 16px; border-bottom: 1px solid var(--line); }
+  table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  th, td { padding: 10px 16px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  tr:last-child td { border-bottom: 0; }
+  th { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); font-weight: 600; }
+  td.price { white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .up { color: var(--red); font-weight: 600; } .down { color: var(--green); font-weight: 600; } .eq { color: var(--muted); }
+  /* coletas */
+  details.coleta { background: var(--card); border: 1px solid var(--line); border-radius: 14px; margin-bottom: 14px; overflow: hidden; }
+  details.coleta > summary { cursor: pointer; list-style: none; padding: 14px 16px; display: flex; flex-wrap: wrap;
+                             justify-content: space-between; gap: 8px; align-items: center; font-weight: 600; }
+  details.coleta > summary::-webkit-details-marker { display: none; }
+  details.coleta > summary::before { content: "▸"; margin-right: 8px; color: var(--muted); }
+  details.coleta[open] > summary::before { content: "▾"; }
+  details.coleta[open] > summary { border-bottom: 1px solid var(--line); }
+  .sum-total { color: var(--green); font-variant-numeric: tabular-nums; }
+  .body { padding: 14px; }
+  section.prod { border: 1px solid var(--line); border-radius: 12px; margin-bottom: 12px; overflow: hidden; }
+  section.prod h3 { margin: 0; padding: 10px 14px; font-size: 15px; border-bottom: 1px solid var(--line);
+                    display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  section.prod h3 .num { color: var(--accent); font-weight: 700; }
+  section.prod h3 .spec { color: var(--muted); font-weight: 400; font-size: 13px; }
+  section.prod th:nth-child(1) { width: 46%; } section.prod th:nth-child(2) { width: 17%; }
+  section.prod th:nth-child(3) { width: 24%; } section.prod th:nth-child(4) { width: 13%; }
+  .store { font-weight: 600; }
+  .prod-name { color: var(--muted); font-size: 13px; }
+  tr.best td { background: var(--green-bg); }
+  tr.best td.pix { color: var(--green); font-weight: 700; }
+  tr.best td:first-child { box-shadow: inset 4px 0 0 var(--green); }
+  .tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 999px; margin-left: 6px; vertical-align: 1px; }
+  .tag.g { background: var(--green); color: var(--card); }
+  .tag.b { background: var(--blue-bg); color: var(--blue); }
+  .inst { color: var(--muted); font-size: 12px; display: block; }
+  a.btn { display: inline-block; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--line);
+          color: var(--text); text-decoration: none; font-size: 13px; white-space: nowrap; }
+  a.btn:hover { border-color: var(--accent); color: var(--accent); }
+  .note { padding: 10px 14px; font-size: 13px; color: var(--muted); border-top: 1px dashed var(--line); }
+  .obs { font-size: 13px; color: var(--muted); padding: 4px 4px 0; }
+  .obs ul { margin: 6px 0; padding-left: 18px; }
+  @media (max-width: 640px) {
+    section.prod thead { display: none; }
+    section.prod tr { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+    section.prod tr:last-child { border-bottom: 0; }
+    section.prod td { padding: 0; border: 0; }
+    section.prod td.store-cell { grid-column: 1 / 3; }
+    section.prod tr.best { background: var(--green-bg); box-shadow: inset 4px 0 0 var(--green); }
+    section.prod tr.best td { background: transparent; box-shadow: none !important; }
+    .resumo th:nth-child(4), .resumo td:nth-child(4) { display: none; }
+  }
+</style>
+<!-- Dados da Sagui (não aparecem na página). Config + histórico: a coleta mais recente primeiro. -->
+<script type="application/json" id="sagui-config">
+{"nome": "{{NOME}}", "slug": "{{slug}}", "status": "ativa", "criada_em": "{{AAAA-MM-DD}}", "concluida_em": null,
+ "horarios": ["10:00", "15:00", "20:00"], "tarefa_agendada": "sagui-{{slug}}", "whatsapp": true,
+ "lojas": "geral", "max_por_item": 3,
+ "itens": [{"id": "{{id}}", "emoji": "{{emoji}}", "nome": "{{nome completo}}", "curto": "{{nome curto}}",
+            "caracteristicas": "{{características}}", "busca": ["{{termo}}"], "obrigatorio": ["{{termo}}"],
+            "excluir": ["kit"], "observacao": ""}],
+ "notas": []}
+</script>
+<script type="application/json" id="sagui-historico">
+[{"data": "{{AAAA-MM-DD}}", "hora": "{{HH:MM}}", "total_pix": 0.00,
+  "itens": {"{{id}}": {"pix": 0.00, "parcelado": 0.00, "loja": "{{Loja}}"}}, "falhas": []}]
+</script>
+</head>
+<body>
+<div class="wrap">
+  <!-- MODELO Sagui Cotações: substitua {{...}}. Um arquivo por cotação; coleta mais recente logo após COLETAS:INICIO. -->
+  <header class="top">
+    <div>
+      <div class="brand">🐒 Sagui Cotações</div>
+      <h1>{{NOME}}</h1>
+      <div class="sub"><span class="pill">Ativa</span> · Coletas {{HORARIOS}} · Lojas: {{LOJAS}} · {{N}} coletas · Atualizado em {{DD/MM/AAAA HHh}}</div>
+      <!-- concluída: <span class="pill off">Concluída em DD/MM/AAAA</span> -->
+    </div>
+    <div class="total"><small>Melhor combinação no Pix (agora)</small><b>R$ {{TOTAL}}</b></div>
+  </header>
+
+  <!-- RESUMO:INICIO -->
+  <div class="card resumo">
+    <h2>Resumo — menor Pix por produto</h2>
+    <table>
+      <thead><tr><th style="width:34%">Produto</th><th style="width:28%">Agora</th><th style="width:16%">Variação</th><th style="width:22%">Menor do histórico</th></tr></thead>
+      <tbody>
+        <!-- uma linha por produto; variação: <td class="down">▼ -R$ 20,00</td> | <td class="up">▲ +R$ 10,00</td> | <td class="eq">= sem mudança</td> | <td class="eq">1ª coleta</td> -->
+        <tr><td>{{EMOJI}} {{PRODUTO_CURTO}}</td><td class="price">R$ {{PIX}} · {{LOJA}}</td><td class="down">▼ -R$ {{DIF}}</td><td class="price">R$ {{MIN}} · {{DD/MM HHh}}</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <!-- RESUMO:FIM -->
+
+  <!-- COLETAS:INICIO -->
+  <details class="coleta" open>
+    <summary><span>📅 {{DD/MM/AAAA}} · {{HH}}h</span><span class="sum-total">Total Pix R$ {{TOTAL}} <span class="down">(▼ -R$ {{DIF}})</span></span></summary>
+    <div class="body">
+
+      <!-- repetir <section class="prod"> para cada produto, numerando 1..N -->
+      <section class="prod">
+        <h3><span class="num">1</span> {{PRODUTO}} <span class="spec">{{CARACTERISTICAS}}</span></h3>
+        <table>
+          <thead><tr><th>Loja</th><th>Pix</th><th>Parcelado</th><th></th></tr></thead>
+          <tbody>
+            <!-- menor Pix: class="best" + tag g (empates: todos). menor parcelado: tag b -->
+            <tr class="best"><td class="store-cell"><span class="store">{{LOJA}}</span><span class="tag g">Menor Pix</span><span class="tag b">Menor parcelado</span><div class="prod-name">{{ANUNCIO / VENDEDOR}}</div></td>
+              <td class="price pix">R$ {{PIX}}</td><td class="price">R$ {{TOTAL_PARCELADO}}<span class="inst">{{12x R$ 00,00 s/ juros}}</span></td>
+              <td><a class="btn" href="{{LINK}}" target="_blank">Abrir ↗</a></td></tr>
+            <tr><td class="store-cell"><span class="store">{{LOJA}}</span><div class="prod-name">{{ANUNCIO / VENDEDOR}}</div></td>
+              <td class="price pix">R$ {{PIX}}</td><td class="price">R$ {{TOTAL_PARCELADO}}<span class="inst">{{PARCELAS}}</span></td>
+              <td><a class="btn" href="{{LINK}}" target="_blank">Abrir ↗</a></td></tr>
+          </tbody>
+        </table>
+        <!-- opcional: <div class="note">{{NOTA}}</div> -->
+      </section>
+
+      <div class="obs">
+        <b>Observações</b>
+        <ul>
+          <li>{{VARIAÇÕES / RECORDES 🔻 / LOJAS SEM DADOS ⚠️}}</li>
+        </ul>
+      </div>
+    </div>
+  </details>
+  <!-- coletas anteriores ficam abaixo, como <details class="coleta"> (sem open) -->
+  <!-- COLETAS:FIM -->
+</div>
+</body>
+</html>
